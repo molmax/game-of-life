@@ -21,9 +21,10 @@ function draw() {
 function initCells() {
   for (let y = 0; y < canvasHeight; y += cellSize) {
     for (let x = 0; x < canvasWidth; x += cellSize) {
-        prob = monteCarlo();
-        chance = 5;
-        // isAlive = Math.round(random(prob)) > chance;
+        //prob = monteCarlo();
+        //chance = 5;
+        //isAlive = Math.round(random(prob)) > chance;
+        //TODO normal randomization, this one is boring
         isAlive = Math.round(Math.random(0, 10) % 2) == 0;
         cells.push(new Cell(x, y, cellSize, isAlive));
     }
@@ -76,18 +77,6 @@ function getCellByCoordinates(x, y) {
   return cells.find(c => c.getByCoordinates(x, y));
 }
 
-function monteCarlo() {
-  while (true) {
-    let r1 = random(0, 10);
-    let probability = r1;
-    let r2 = random(0, 10);
-
-    if (r2 < probability) {
-      return r1;
-    }
-  }
-}
-
 function processStep(cell) {
   n = cell.neighbours.filter(c => c.currentStateIsAlive).length;
   if (cell.currentStateIsAlive) {
@@ -102,6 +91,17 @@ function processStep(cell) {
     }
   } else if (n == 3) {
     cell.nextStateIsAlive = true;
+  }
+}
+
+function monteCarlo() {
+  while (true) {
+   let r1 = random(0, 10);
+   let probability = r1;
+   let r2 = random(0, 10);
+   if (r2 < probability) {
+     return r1;
+   }
   }
 }
 
