@@ -1,18 +1,16 @@
-canvasWidth = 100;
-canvasHeight = 100;
+canvasWidth = canvasHeight = 600;
 
 let cells = [];
-let cellSize = 10;
+let cellSize = 15;
 
 function setup() {
   createCanvas(canvasWidth, canvasHeight);
-  background(200);
   frameRate(1);
   initCells();
 }
 
 function draw() {
-  background(200);
+  background(0, 153, 51);
   cells.forEach(cell => {
     processStep(cell);
     cell.currentStateIsAlive = cell.nextStateIsAlive;
@@ -91,8 +89,6 @@ function monteCarlo() {
 }
 
 function processStep(cell) {
-  //TODO need to introduce current and next cell state.
-  //Check currentState (alive or not) then do the logic and set nexState. At the very end do currentState=nexState.
   n = cell.neighbours.filter(c => c.currentStateIsAlive).length;
   if (cell.currentStateIsAlive) {
     if (n < 2) {
@@ -134,7 +130,7 @@ class Cell {
     if (this.currentStateIsAlive) {
       fill(0);
     } else {
-      fill(200);
+      fill(0, 153, 51);
     }
     noStroke();
     square(this.x, this.y, this.size);
