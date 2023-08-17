@@ -10,6 +10,7 @@ function setup() {
 
 function draw() {
   cells.forEach(cell => {
+    processStep(cell);
     cell.draw();
   });
 }
@@ -38,11 +39,29 @@ function monteCarlo() {
   }
 }
 
+function processStep(cell) {
+  n = cell.neighbours.filter(c => c.getIsAlive()).length;
+  if (cell.getIsAlive()) {
+    if (n < 2) {
+      cell.kill();
+    } 
+    else if (n == 2 || n == 3) {
+      //Do nothing
+    }
+    else if (n > 3) {
+      cell.kill();
+    }
+  } else if (n == 3) {
+    cell.makeAlive();
+  }
+}
+
 class Cell {
   x;
   y;
   size;
   isAlive;
+  neighbours = [];
 
   constructor(x, y, size, isAlive) {
     this.x = x;
@@ -57,6 +76,10 @@ class Cell {
 
   kill() {
     this.isAlive = false;
+  }
+
+  getIsAlive() {
+    return this.isAlive;
   }
 
   draw() {
