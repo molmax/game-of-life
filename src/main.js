@@ -6,12 +6,16 @@ let cellSize = 10;
 
 function setup() {
   createCanvas(canvasWidth, canvasHeight);
+  background(200);
+  frameRate(1);
   initCells();
 }
 
 function draw() {
+  background(200);
   cells.forEach(cell => {
     processStep(cell);
+    cell.currentStateIsAlive = cell.nextStateIsAlive;
     cell.draw();
   });
 }
@@ -20,8 +24,9 @@ function initCells() {
   for (let y = 0; y < canvasHeight; y += cellSize) {
     for (let x = 0; x < canvasWidth; x += cellSize) {
         prob = monteCarlo();
-        chance = 350;
-        isAlive = Math.round(random(prob)) > chance;
+        chance = 5;
+        // isAlive = Math.round(random(prob)) > chance;
+        isAlive = Math.round(Math.random(0, 10) % 2) == 0;
         cells.push(new Cell(x, y, cellSize, isAlive));
     }
   }
@@ -75,9 +80,9 @@ function getCellByCoordinates(x, y) {
 
 function monteCarlo() {
   while (true) {
-    let r1 = random(-600, 600);
+    let r1 = random(0, 10);
     let probability = r1;
-    let r2 = random(-600, 600);
+    let r2 = random(0, 10);
 
     if (r2 < probability) {
       return r1;
@@ -88,19 +93,19 @@ function monteCarlo() {
 function processStep(cell) {
   //TODO need to introduce current and next cell state.
   //Check currentState (alive or not) then do the logic and set nexState. At the very end do currentState=nexState.
-  n = cell.neighbours.filter(c => c.getIsAlive()).length;
-  if (cell.getIsAlive()) {
+  n = cell.neighbours.filter(c => c.currentStateIsAlive).length;
+  if (cell.currentStateIsAlive) {
     if (n < 2) {
-      cell.kill();
+      cell.nextStateIsAlive = false;
     } 
     else if (n == 2 || n == 3) {
       //Do nothing
     }
     else if (n > 3) {
-      cell.kill();
+      cell.nextStateIsAlive = false;
     }
   } else if (n == 3) {
-    cell.makeAlive();
+    cell.nextStateIsAlive = true;
   }
 }
 
@@ -108,26 +113,15 @@ class Cell {
   x;
   y;
   size;
-  isAlive;
+  currentStateIsAlive;//is currently alive?
+  nextStateIsAlive;//will be alive on next step?
   neighbours = [];
 
   constructor(x, y, size, isAlive) {
     this.x = x;
     this.y = y; 
     this.size = size;
-    this.isAlive = isAlive;
-  }
-
-  makeAlive() {
-    this.isAlive = true;
-  }
-
-  kill() {
-    this.isAlive = false;
-  }
-
-  getIsAlive() {
-    return this.isAlive;
+    this.currentStateIsAlive = isAlive;
   }
 
   getByCoordinates(x, y) {
@@ -137,10 +131,10 @@ class Cell {
   }
 
   draw() {
-    if (this.isAlive) {
+    if (this.currentStateIsAlive) {
       fill(0);
     } else {
-      fill(255);
+      fill(200);
     }
     noStroke();
     square(this.x, this.y, this.size);
