@@ -1,7 +1,8 @@
-canvasWidth = 600;
-canvasHeight = 600;
+canvasWidth = 100;
+canvasHeight = 100;
 
 let cells = [];
+let cellSize = 10;
 
 function setup() {
   createCanvas(canvasWidth, canvasHeight);
@@ -16,7 +17,6 @@ function draw() {
 }
 
 function initCells() {
-  cellSize = 10;
   for (let y = 0; y < canvasHeight; y += cellSize) {
     for (let x = 0; x < canvasWidth; x += cellSize) {
         prob = monteCarlo();
@@ -25,6 +25,52 @@ function initCells() {
         cells.push(new Cell(x, y, cellSize, isAlive));
     }
   }
+  initNeighbours();
+}
+
+function initNeighbours() {
+  cells.forEach(cell => {
+    x = cell.x;
+    y = cell.y;
+
+    n_right = getCellByCoordinates(x + cellSize, y);
+    n_left = getCellByCoordinates(x - cellSize, y);
+    n_up = getCellByCoordinates(x, y - cellSize);
+    n_down = getCellByCoordinates(x, y + cellSize);
+    n_right_up_diag = getCellByCoordinates(x + cellSize, y - cellSize);
+    n_lelft_up_diag = getCellByCoordinates(x - cellSize, y - cellSize);
+    n_right_down_diag = getCellByCoordinates(x + cellSize, y + cellSize);
+    n_left_down_diag = getCellByCoordinates(x - cellSize, y + cellSize);
+
+    if (n_right != undefined) {
+      cell.neighbours.push(n_right); 
+    }
+    if (n_left != undefined) {
+      cell.neighbours.push(n_left);
+    }
+    if (n_up != undefined) {
+      cell.neighbours.push(n_up);
+    }
+    if (n_down != undefined) {
+      cell.neighbours.push(n_down);
+    }
+    if (n_right_up_diag != undefined) {
+      cell.neighbours.push(n_right_up_diag);
+    }
+    if (n_lelft_up_diag != undefined) {
+      cell.neighbours.push(n_lelft_up_diag);
+    }
+    if (n_right_down_diag != undefined) {
+      cell.neighbours.push(n_right_down_diag);
+    }
+    if (n_left_down_diag != undefined) {
+      cell.neighbours.push(n_left_down_diag);
+    }
+  });
+}
+
+function getCellByCoordinates(x, y) {
+  return cells.find(c => c.getByCoordinates(x, y));
 }
 
 function monteCarlo() {
@@ -40,6 +86,8 @@ function monteCarlo() {
 }
 
 function processStep(cell) {
+  //TODO need to introduce current and next cell state.
+  //Check currentState (alive or not) then do the logic and set nexState. At the very end do currentState=nexState.
   n = cell.neighbours.filter(c => c.getIsAlive()).length;
   if (cell.getIsAlive()) {
     if (n < 2) {
@@ -80,6 +128,12 @@ class Cell {
 
   getIsAlive() {
     return this.isAlive;
+  }
+
+  getByCoordinates(x, y) {
+    if (this.x == x && this.y == y) {
+      return this;
+    }
   }
 
   draw() {
